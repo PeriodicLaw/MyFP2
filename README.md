@@ -33,7 +33,6 @@ let add : Nat -> Nat -> Nat
 ```
 data Equal : {A : Type} -> A -> A -> Type where
   | refl : {A} -> {x : A} -> Equal x x
-eval refl
 
 let sym : {A} ->  {x y : A} -> Equal x y -> Equal y x
   = \ e case e of
