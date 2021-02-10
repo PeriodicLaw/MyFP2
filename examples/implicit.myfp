@@ -1,0 +1,67 @@
+let id : {A : Type} -> A -> A
+  = \ x x
+eval id
+
+let id' : {A : Type} -> A -> A
+  = \ {A} \ x x
+eval id'
+
+
+data Nat : Type where
+  | zero : Nat
+  | suc : Nat -> Nat
+
+let add : Nat -> Nat -> Nat
+  = \ n \ m case n of
+      | zero => m
+      | suc n' => suc (add n' m)
+
+eval id (suc zero)
+
+eval id {Nat} (suc zero)
+
+
+
+data Equal : {A : Type} -> A -> A -> Type where
+  | refl : {A} -> {x : A} -> Equal x x
+eval refl
+
+let sym : {A} ->  {x y : A} -> Equal x y -> Equal y x
+  = \ e case e of
+      | refl => refl
+eval sym
+
+let trans : {A} -> {x y z : A} -> Equal x y -> Equal y z -> Equal x z
+  = \ e case e of
+      | refl => \ e' case e' of
+        | refl => refl
+eval trans
+
+eval Equal
+let cong : {A B : Type} -> {x y} -> (f : A -> B) -> Equal x y -> Equal (f x) (f y)
+  = \ f \ e case e of
+      | refl => refl
+eval cong
+
+let subst : {A x y} -> {P : A -> Type} -> Equal x y -> P x -> P y
+  = \ e \ p case e of
+      | refl => p
+eval subst
+
+
+
+data Vec : Type -> Nat -> Type where
+  | nil : {A} -> Vec A zero
+  | cons : {A n} -> A -> Vec A n -> Vec A (suc n)
+
+let concat : {A n m} -> Vec A n -> Vec A m -> Vec A (add n m)
+  = \ v \ w case v of
+      | nil => w
+      | cons a v' => cons a (concat v' w)
+
+let map : {A B n} -> (f : A -> B) -> Vec A n -> Vec B n
+  = \ f \ v case v of
+      | nil => nil
+      | cons a v' => cons (f a) (map f v')
+
+eval map (add (suc zero)) (cons zero (cons (suc zero) (cons (suc (suc zero)) nil)))

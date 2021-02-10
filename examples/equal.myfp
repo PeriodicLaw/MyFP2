@@ -1,0 +1,30 @@
+data Equal : (A : Type) -> A -> A -> Type where
+  | refl : (A : Type) -> (x : A) -> Equal A x x
+
+let sym : (A : Type) -> (x : A) -> (y : A) -> Equal A x y -> Equal A y x
+  = \ A \ x \ y \ e
+    case e of
+    | refl A t => refl A t
+
+let trans : (A : Type) -> (x : A) -> (y : A) -> (z : A) -> Equal A x y -> Equal A y z -> Equal A x z
+  = \ A \ x \ y \ z \ e
+    case e of
+    | refl A t => \ e'
+        case e' of
+        | refl A t => refl A t
+
+let cong : (A : Type) -> (B : Type) -> (x : A) -> (y : A) -> (f : A -> B) -> Equal A x y -> Equal B (f x) (f y)
+  = \ A \ B \ x \ y \ f \ e
+    case e of
+    | refl A t => refl B (f t)
+
+let subst : (A : Type) -> (P : A -> Type) -> (x : A) -> (y : A) -> Equal A x y -> P x -> P y
+  = \ A \ P \ x \ y \ e \ p
+    case e of
+    | refl A t => p
+
+
+
+data ExistsUnique : (A : Type) -> (A -> Type) -> Type where
+  | exists_unique : (A : Type) -> (P : A -> Type) -> (x : A) -> P x
+      -> ((y : A) -> P y -> Equal A x y) -> ExistsUnique A P

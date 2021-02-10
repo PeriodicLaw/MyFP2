@@ -1,0 +1,98 @@
+data Unit : Type where
+  | unit : Unit
+
+let const : (A : Type) -> A -> Unit
+  = \ A \ a unit
+
+data Void : Type where
+
+let absurd : (A : Type) -> Void -> A
+  = \ A \ v case v of
+
+
+
+data Bool : Type where
+  | true : Bool
+  | false : Bool
+
+let and : Bool -> Bool -> Bool
+  = \ p case p of
+        | true => \ q q
+        | false => \ q false
+
+let or : Bool -> Bool -> Bool
+  = \ p case p of
+        | true => \ q true
+        | false => \ q q
+
+let not : Bool -> Bool
+  = \ p case p of
+        | true => false
+        | false => true
+eval not
+
+
+
+data Pair : Type -> Type -> Type where
+  | pair : (A : Type) -> (B : Type) -> A -> B -> Pair A B
+
+let first : (A : Type) -> (B : Type) -> Pair A B -> A
+  = \ A \ B \ p
+      case p of
+      | pair A' B' x y => x
+
+let second : (A : Type) -> (B : Type) -> Pair A B -> B
+  = \ A \ B \ p
+      case p of
+      | pair A B x y => y
+
+eval first Bool Bool (pair Bool Bool true false)
+eval second Bool Bool (pair Bool Bool true false)
+
+let curry : (A : Type) -> (B : Type) -> (C : Type) -> (Pair A B -> C) -> (A -> B -> C)
+  = \ A \ B \ C \ f \ a \ b f (pair A B a b)
+
+let uncurry : (A : Type) -> (B : Type) -> (C : Type) -> (A -> B -> C) -> (Pair A B -> C)
+  = \ A \ B \ C \ f \ p
+      case p of
+      | pair A B x y => f x y
+
+eval uncurry Bool Bool Bool and
+
+
+
+data Either : Type -> Type -> Type where
+  | eitherl : (A : Type) -> (B : Type) -> A -> Either A B
+  | eitherr : (A : Type) -> (B : Type) -> B -> Either A B
+
+let casemap : (A : Type) -> (B : Type) -> (C : Type) -> (A -> C) -> (B -> C) -> Either A B -> C
+  = \ A \ B \ C \ f \ g \ e
+      case e of
+      | eitherl A B x => f x
+      | eitherr A B y => g y
+
+
+
+data Forall : (A : Type) -> (A -> Type) -> Type where
+  | forall : (A : Type) -> (B : A -> Type) -> ((x : A) -> B x) -> Forall A B
+
+let apply : (A : Type) -> (B : A -> Type) -> Forall A B -> (x : A) -> B x
+  = \ A \ B \ p \ x
+      case p of
+      | forall A' B' f => (f x)
+
+data Exists : (A : Type) -> (A -> Type) -> Type where
+  | exists : (A : Type) -> (B : A -> Type) -> (x : A) -> B x -> Exists A B
+
+let exists_fst : (A : Type) -> (B : A -> Type) -> Exists A B -> A
+  = \ A \ B \ p
+      case p of
+      | exists A B x y => x
+
+let exists_snd : (A : Type) -> (B : A -> Type) -> (p : Exists A B) -> B (exists_fst A B p)
+  = \ A \ B \ p
+      case p of
+      | exists A B x y => y
+
+let exists_unit : Exists Unit (\ x Unit)
+  = exists Unit (\ x Unit) unit unit

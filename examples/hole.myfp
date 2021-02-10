@@ -1,0 +1,31 @@
+# let f : (A : Type) -> A -> A
+#   = \ A \ a ?
+
+# let compose : (A : Type) -> (B : Type) -> (C : Type) -> (B -> C) -> (A -> B) -> (A -> C)
+#   = \ A \ B \ C \ f \ g \ a f ?
+
+# data Pair : Type -> Type -> Type where
+#   | pair : (A : Type) -> (B : Type) -> A -> B -> Pair A B
+# 
+# let uncurry : (A : Type) -> (B : Type) -> (C : Type) -> (A -> B -> C) -> (Pair A B -> C)
+#   = \ A \ B \ C \ f \ p
+#       case p of
+#       | pair A' B' x y => ?
+
+# data Equal : (A : Type) -> A -> A -> Type where
+#   | refl : (A : Type) -> (x : A) -> Equal A x x
+# 
+# let trans : (A : Type) -> (x : A) -> (y : A) -> (z : A) -> Equal A x y -> Equal A y z -> Equal A x z
+#   = \ A \ x \ y \ z \ e
+#     case e of
+#     | refl A t => \ e'
+#         case e' of
+#         | refl A t => ?
+
+data Equal : {A : Type} -> A -> A -> Type where
+  |  refl : {A} -> {x : A} -> Equal x x
+
+let trans : {A} -> {x y z : A} -> Equal x y -> Equal y z -> Equal x z
+  = \ e case e of
+      | refl => \ e' case e' of
+        | refl => ?

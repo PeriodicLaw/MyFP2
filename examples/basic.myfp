@@ -1,0 +1,30 @@
+let id : (A : Type) -> A -> A
+  = \ A \ a a
+eval id
+
+let id' = \ (A : Type) \ (a : A) a
+eval id'
+
+let func : Type -> Type -> Type
+  = \ A \ B (A -> B)
+eval func
+
+eval \ (A : Type) \ (B : Type) (func A B)
+
+let compose : (A : Type) -> (B : Type) -> (C : Type) -> (B -> C) -> (A -> B) -> (A -> C)
+  = \ A \ B \ C \ f \ g \ a f (g a)
+eval compose
+
+eval \ (A : Type) \ (B : Type) \ (C : Type) \ (f : B -> C) \ (g : A -> B) \ (a : A) f (g a)
+
+let compose' : (A : Type) -> (B : Type) -> (C : Type) -> (func B C) -> (func A B) -> (func A C)
+  = \ A \ B \ C \ f \ g \ a f (g a)
+eval compose'
+
+eval \ (A : Type) \ (B : Type) \ (C : Type) \ (f : func B C) \ (g : func A B) \ (a : A) f (g a)
+
+let curry_swap : (A : Type) -> (B : Type) -> (C : Type) -> (A -> B -> C) -> (B -> A -> C)
+  = \ A \ B \ C \ f \ b \ a f a b
+
+let apply : (A : Type) -> (B : A -> Type) -> ((x : A) -> B x) -> (x : A) -> B x
+  = \ A \ B \ f \ x (f x)

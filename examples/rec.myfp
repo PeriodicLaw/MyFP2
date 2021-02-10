@@ -1,0 +1,72 @@
+data Nat : Type where
+  | zero : Nat
+  | suc : Nat -> Nat
+
+let add : Nat -> Nat -> Nat
+  = \ x case x of
+        | zero => \ y y
+        | suc n => \ y suc (add n y)
+
+let mult : Nat -> Nat -> Nat
+  = \ x case x of
+        | zero => \ y zero
+        | suc n => \ y add y (mult n y)
+
+let ind : (P : Nat -> Type) -> P zero -> ((n : Nat) -> P n -> P (suc n)) -> (n : Nat) -> P n
+  = \ P \ P0 \ indP \ n
+    case n of
+    | zero => P0
+    | suc m => indP m (ind P P0 indP m)
+
+
+
+# let bad : Nat -> Nat
+#   = \ x bad x
+
+
+
+data List : Type -> Type where
+  | nil : (A : Type) -> List A
+  | cons : (A : Type) -> A -> List A -> List A
+
+let concat : (A : Type) -> List A -> List A -> List A
+  = \ A \ l
+      case l of
+      | nil A => \ m m
+      | cons A a l' => \ m cons A a (concat A l' m)
+
+let map : (A : Type) -> (B : Type) -> (A -> B) -> List A -> List B
+  = \ A \ B \ f \ l
+      case l of
+      | nil A => nil B
+      | cons A a l' => cons B (f a) (map A B f l')
+
+let flat : (A : Type) -> (B : Type) -> B -> (A -> B -> B) -> List A -> B
+  = \ A \ B \ z \ f \ l
+      case l of
+      | nil A => z
+      | cons A a l' => f a (flat A B z f l')
+
+
+
+data Vec : Type -> Nat -> Type where
+  | nilv : (A : Type) -> Vec A zero
+  | consv : (A : Type) -> (n : Nat) -> A -> Vec A n -> Vec A (suc n)
+
+let concatv : (A : Type) -> (n : Nat) -> (m : Nat) -> Vec A n -> Vec A m -> Vec A (add n m)
+  = \ A \ n \ m \ v \ w
+      case v of
+      | nilv A => w
+      | consv A n' a v' => consv A (add n' m) a (concatv A n' m v' w)
+
+let mapv : (A : Type) -> (B : Type) -> (n : Nat) -> (A -> B) -> Vec A n -> Vec B n
+  = \ A \ B \ n \ f \ v
+      case v of
+      | nilv A => nilv B
+      | consv A n' a v' => consv B n' (f a) (mapv A B n' f v')
+
+let flatv : (A : Type) -> (B : Type) -> (n : Nat) -> B -> (A -> B -> B) -> Vec A n -> B
+  = \ A \ B \ n \ z \ f \ v
+      case v of
+      | nilv A => z
+      | consv A n' a v' => f a (flatv A B n' z f v')
